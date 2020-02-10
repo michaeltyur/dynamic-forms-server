@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DynamicFormsServer.BL;
 using DynamicFormsServer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,8 +23,14 @@ namespace DynamicFormsServer.Controllers
         [HttpGet("GetForms")]
         public ActionResult Get(string request)
         {
-            FormControlObject formsContainer = new FormControlObject();
-            return Ok(formsContainer);
+            int reportID = 0;
+            if (int.TryParse(request, out reportID))
+            {
+                FormControlObject formsContainer = FormHelper.GetReportForm(reportID);
+                return Ok(formsContainer);
+            }
+            else throw new Exception("Try parse error");
+            
         }
     }
 }

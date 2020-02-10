@@ -9,11 +9,12 @@ namespace DynamicFormsServer.Models
     {
         int Id { get; set; }
         ControlLabel Label { get; set; }
-        string Type { get; set; }
+        string ControlType { get; set; }
         ControlStyle ControlStyle { get; set; }
         DataSource DataSource { get; set; }
         ValidatorConfig ValidatorConfig { get; set; }
         Parameters Parameters { get; set; }
+        string InputType { get; set; }
     }
 
 
@@ -29,39 +30,32 @@ namespace DynamicFormsServer.Models
     public class Report
     {
         public int Id { get; set; }
+        public string FetchDataUrl { get; set; }
         public string Title { get; set; }
         public string RDL { get; set; }
         public List<IControl> Controls { get; set; }
         public Report()
         {
             Controls = new List<IControl>();
-
-            string controlClass = "form-control";
-            Controls.Add(new SelectControl(1, "select", controlClass));
-            Controls.Add(new InputeControl(2, "input","text", controlClass));
-            Controls.Add(new CheckBoxControl(3, "checkbox", controlClass));
-            Id = 2;
-            Title = "Report Title";
         }
     }
     public class ControlBasic : IControl
     {
 
         public int Id { get; set; }
-        public string Type { get; set; }
-
+        public ControlLabel Label { get; set; }
+        public string ControlType { get; set; }
         public ControlStyle ControlStyle { get; set; }
         public DataSource DataSource { get; set; }
         public ValidatorConfig ValidatorConfig { get; set; }
         public Parameters Parameters { get; set; }
-        public ControlLabel Label { get; set; }
-        public string ControlType { get; set; }
+        public string InputType { get; set; }
 
         public ControlBasic(int id, string label, string htmlClass)
         {
             Id = id;
-            Label = new ControlLabel( label,id.ToString());
-            DataSource = new DataSource(null);
+            Label = new ControlLabel(label, id.ToString());
+            DataSource = new DataSource();
             ControlStyle = new ControlStyle();
             ControlStyle.HtmlClass = htmlClass;
             ValidatorConfig = new ValidatorConfig();
@@ -70,41 +64,45 @@ namespace DynamicFormsServer.Models
 
     }
 
-
     public class InputeControl : ControlBasic
     {
-        public string InputType { get; set; }
-
         public InputeControl(
             int id,
             string label,
             string inputType,
-            string htmlClass) : base(id, label, htmlClass) 
+            string htmlClass) : base(id, label, htmlClass)
         {
-            InputType = inputType;
+            base.InputType = inputType;
             base.ControlType = "input";
         }
 
     }
+
     public class SelectControl : ControlBasic
     {
         public SelectControl(
             int id,
             string label,
-            string htmlClass) : base(id,label, htmlClass) {
+            string htmlClass) : base(id, label, htmlClass)
+        {
             base.ControlType = "select";
+
+            var optionList = new List<string>();
+            optionList.Add("option 1");
+            optionList.Add("option 2");
+            optionList.Add("option 3");
+
+            base.DataSource = new DataSource { Data = optionList };
         }
 
     }
-    public class CheckBoxControl : ControlBasic
-    {
-        public CheckBoxControl(
-             int id,
-            string label,
-            string htmlClass) : base(id, label, htmlClass) {
-            base.ControlType = "checkbox";
-        }
 
+    public class DatePickerControl : ControlBasic
+    {
+        public DatePickerControl(int id,string label,string htmlClass) : base(id, label, htmlClass)
+        {
+            base.ControlType = ControlTypeEnum.datepicker.ToString();
+        }
     }
 
     public class ControlStyle
@@ -112,29 +110,42 @@ namespace DynamicFormsServer.Models
         public string HtmlClass { get; set; }
         public string FontColor { get; set; }
         public string BackgroundColor { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public string ContainerBorderStyle { get; set; }
+        public int ContainerWidth { get; set; }
+
+        public ControlStyle()
+        {
+            ContainerWidth = 20;
+            Width = -1;
+            Height = -1;
+        }
 
     }
 
     public class ControlLabel
     {
-        public string Label { get; set; }
-        public string For { get; set; }
-        public ControlLabel(string label,string forControl)
+        public string LabelName { get; set; }
+        public string ForControl { get; set; }
+        public ControlLabel(string label, string forControl)
         {
-            Label = label;
-            For = forControl;
+            LabelName = label;
+            ForControl = forControl;
         }
     }
 
-
     public class DataSource
     {
-        public string Id { get; set; }
-        public List<object> Data { get; set; }
-        public DataSource(object[] data)
+        public int Id { get; set; }
+        public List<string> Data { get; set; }
+
+        public Object SingleData { get; set; }
+
+        public DataSource()
+
         {
-            if (data == null)
-                Data = new List<object>();
+            Data = new List<string>();
         }
     }
 
@@ -148,28 +159,28 @@ namespace DynamicFormsServer.Models
         }
     }
 
-
-
     public class Content
     {
         public string DataSource { get; set; }
-        public string displayColumn { get; set; }
-        public string orderColumn { get; set; }
-        public string table { get; set; }
+        public string DisplayColumn { get; set; }
+        public string OrderColumn { get; set; }
+        public string Table { get; set; }
     }
-
-
 
     public class ValidatorConfig
     {
         public string CompareTo { get; set; }
         public string Restriction { get; set; }
-
+        public bool IsNeedValidation { get; set; }
         public bool IsRequired { get; set; }
-        public ValidatorConfig()
-        {
-            IsRequired = true;
-        }
+
     }
 
+}
+
+public enum ControlTypeEnum
+{
+    input =1,
+    select ,
+    datepicker
 }
