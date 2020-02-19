@@ -17,20 +17,29 @@ namespace DynamicFormsServer.Controllers
     {
         public DynamicFormsController()
         {
-                
+
         }
 
         [HttpGet("GetForms")]
         public ActionResult Get(string request)
         {
-            int reportID = 0;
-            if (int.TryParse(request, out reportID))
+            int reportId = 0;
+            if (int.TryParse(request, out reportId))
             {
-                FormControlObject formsContainer = FormHelper.GetReportForm(reportID);
+                FormControlObject formsContainer = FormHelper.GetReportForm(reportId);
                 return Ok(formsContainer);
             }
-            else throw new Exception("Try parse error");
-            
+            else
+            {
+                return NotFound("report id is incorrect");
+            }
+        }
+
+        [HttpGet("GetReportsTitles")]
+        public ActionResult GetReportsTitles()
+        {
+            List<string> list = FormHelper.GetAllReportFormTitles();
+            return Ok(list);
         }
     }
 }
