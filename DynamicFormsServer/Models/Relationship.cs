@@ -9,7 +9,7 @@ namespace DynamicFormsServer.Models
     {
         public int ControlID { get; set; }
         public int FKControlID { get; set; }
-        public List<RelationshipValue> FKValuesIDs;
+        public List<RelationshipValue> FKValuesIDs { get; set; }
         public Relationship()
         {
             FKValuesIDs = new List<RelationshipValue>();

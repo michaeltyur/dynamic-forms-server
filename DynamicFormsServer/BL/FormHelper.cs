@@ -13,6 +13,10 @@ namespace DynamicFormsServer.BL
 
         public static FormControlObject GetReportForm(int reportId)
         {
+            if (FormControlObjectList==null || FormControlObjectList.Count==0)
+            {
+                GetAllReportFormTitles();
+            }
 
             foreach (var item in FormControlObjectList)
             {
